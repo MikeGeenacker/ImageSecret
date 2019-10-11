@@ -19,7 +19,7 @@ public class Main {
     public static void main(String[] args) {
         calc = new ColorCalculator();
         try {
-            img = ImageIO.read(new File("img/voorbeeld3.jpg"));
+            img = ImageIO.read(new File("img/voorbeeld7.png"));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -35,7 +35,7 @@ public class Main {
 
         Color avgColor = calc.avgColor(colors);
 
-        RegionSearcher searcher = new RegionSearcher(img.getWidth(), img.getHeight(), 1920, 1080);
+        RegionSearcher searcher = new RegionSearcher(img.getWidth(), img.getHeight(), 1080, 1920);
         ArrayList<Region> regions = searcher.makeRegions(colors.length / (1920 * 1080), colors);
 
         Encoder enc = new Encoder(regions.get(0), "String  ");
@@ -43,9 +43,9 @@ public class Main {
 
         BufferedImage encodedImg = colorToImage(enc.region);
 
-        File f = new File("encodedImg.jpg");
+        File f = new File("encodedImg.png");
         try {
-            ImageIO.write(encodedImg, "jpg", f);
+            ImageIO.write(encodedImg, "png", f);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -62,17 +62,39 @@ public class Main {
     public static BufferedImage colorToImage(Region r) {
         Color[] pixels = r.getPixels();
 
-        BufferedImage img = new BufferedImage(1920, 1080, BufferedImage.TYPE_INT_RGB);
+        BufferedImage img = new BufferedImage(r.getWidth(), r.getHeight(), BufferedImage.TYPE_INT_RGB);
 
         // TODO, fix x en y, coordinate of out bounds
-        for (int i = 0; i < 1080; i++) {
-            int y = i * 1080;
-            for (int j = 0; j < 1920; j++) {
-                int x = j;
-                img.setRGB(j, i, pixels[x + y].getRGB());
-            }
+        // TODO Jelle programeer aap fix dit
+        // TODO jelle geef info
+        // aspect ratio, geen idee waarom
+        boolean isLandscape;
+        float aspectRatio;
+        if(r.getWidth() > r.getHeight()) {
+            aspectRatio = (float) r.getWidth() / r.getHeight();
+            isLandscape = true;
+        }
+        else {
+            aspectRatio = (float) r.getHeight() / r.getWidth();
+            isLandscape = false;
         }
 
+        for(int x = 0; x < r.getWidth(); x++) {
+            int i = x;
+            for(int y = 0; y < r.getHeight()-850; y++) {
+                // ????? int conversie op float operatie (6.9 > 6) laatste pixel meenemen?
+                int j;
+                if (isLandscape)
+                    j = (int) Math.floor((y* (r.getHeight() * aspectRatio)));
+                else
+                    j = (int) Math.floor((y * (r.getWidth() * aspectRatio)));
+
+//                if (j >= img.getHeight() * img.getWidth())
+//                    j = img.getHeight() * img.getWidth() - 2;
+
+                img.setRGB(x, y, pixels[i + j].getRGB());
+            }
+        }
         return img;
     }
 

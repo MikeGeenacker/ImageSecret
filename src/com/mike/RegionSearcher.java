@@ -20,6 +20,15 @@ public class RegionSearcher {
 
     }
 
+    // jelle dit malken
+    public Color[] toArray(Region[] regions) {
+        ArrayList<Color> col = new ArrayList<>();
+        for(Region r : regions) {
+            // todo jelle
+        }
+        return null;
+    }
+
     public ArrayList<Region> makeRegions(int numOfRegions, Color[] pixels) {
         // per img loopen we door alle regions heen
         // per region loopen we door de hoogte heen en kopieren we de rows

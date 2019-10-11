@@ -28,5 +28,13 @@ public class Region {
     public Color getPixel(int pos) {
         return pixels[pos];
     }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
 }
 
