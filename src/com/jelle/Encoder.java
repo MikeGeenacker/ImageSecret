@@ -6,7 +6,6 @@ import java.util.HashMap;
 public class Encoder {
     private String code;
     private int controlPixels;
-    private static int count;
 
     public Encoder(String code, int controlPixels) {
         this.code = code.toLowerCase();
@@ -28,28 +27,56 @@ public class Encoder {
 
         for (int i = 0; i <= numRows; i++) {
             for (int j = 1; j <= (charArray.length - (i * charPerRow)) / pixelsPerChar && j <= region.getWidth() / pixelsPerChar; j++) {
+                int rControl = region.getPixelColor((j * pixelsPerChar) - 2, i).getRed();
+                int rCode = region.getPixelColor((j * pixelsPerChar) - 1, i).getRed();
+                int gControl = region.getPixelColor((j * pixelsPerChar) - 2, i).getGreen();
+                int gCode = region.getPixelColor((j * pixelsPerChar) - 1, i).getGreen();
+                int bControl = region.getPixelColor((j * pixelsPerChar) - 2, i).getBlue();
+                int bCode = region.getPixelColor((j * pixelsPerChar) - 1, i).getBlue();
+
+                if (rControl > 246 || rCode > 246 || gControl > 246 || gCode > 246 || bControl > 246 || bCode > 246
+                        || rControl < 9 || rCode < 9 || gControl < 9 || gCode < 9 || bControl < 9 || bCode < 9) {
+                    continue;
+                }
 
                 if (keyMap.get(charArray[charIndex]) == null) {
                     charIndex++;
                     continue;
                 }
-
-                count++;
-
-                int value = keyMap.get(charArray[charIndex]) % modulo;
-                int r = region.getPixelColor((j * pixelsPerChar) - 1, i).getRed();
-                int g = region.getPixelColor((j * pixelsPerChar) - 1, i).getGreen();
-                int b = region.getPixelColor((j * pixelsPerChar) - 1, i).getBlue();
+                int hash = keyMap.get(charArray[charIndex]) % modulo;
 
                 if (keyMap.get(charArray[charIndex]) < modulo) {
-                    r = Math.min(r + value, 255);
+                    rCode += hash;
+                    if (rControl % 2 == 0) {
+                        rControl++;
+                    }
+                    if (gControl % 2 == 1) {
+                        gControl++;
+                    }
+                    bControl = bControl - (gControl % 10) + hash;
                 } else if (keyMap.get(charArray[charIndex]) < 2 * modulo) {
-                    g = Math.min(g + value, 255);
+                    gCode += hash;
+                    if (gControl % 2 == 0) {
+                        gControl++;
+                    }
+                    if (bControl % 2 == 1) {
+                        bControl++;
+                    }
+                    rControl = rControl - (bControl % 10) + hash;
                 } else {
-                    b = Math.min(b + value, 255);
+                    bCode += hash;
+                    if (bControl % 2 == 0) {
+                        bControl++;
+                    }
+                    if (rControl % 2 == 1) {
+                        rControl++;
+                    }
+                    bControl = bControl - (gControl % 10) + hash;
                 }
 
-                region.setPixel((j * pixelsPerChar) - 1, i, new Color(r, g, b));
+                System.out.println(rControl);
+                region.setPixel((j * pixelsPerChar) - 2, i, new Color(rControl, gControl, bControl));
+                region.setPixel((j * pixelsPerChar) - 1, i, new Color(rCode, gCode, bCode));
 
                 charIndex++;
                 if (charIndex == charArray.length) {
@@ -60,15 +87,11 @@ public class Encoder {
         return region;
     }
 
-    public static int getCount() {
-        return count;
-    }
-
     public String getCode() {
         return code;
     }
 
-    public HashMap<Character, Integer> keyMap = new HashMap<>() {{
+    private HashMap<Character, Integer> keyMap = new HashMap<>() {{
         put('a', 0);
         put('b', 1);
         put('c', 2);
@@ -96,6 +119,10 @@ public class Encoder {
         put('y', 24);
         put('z', 25);
         put(' ', 26);
+        put('.', 27);
+        put('!', 27);
+        put(',', 28);
+        put('?', 29);
     }};
 
     public int getControlPixels() {
