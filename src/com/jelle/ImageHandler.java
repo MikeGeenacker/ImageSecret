@@ -18,6 +18,8 @@ public class ImageHandler {
 
     public ImageHandler(BufferedImage img) {
         originalImg = img;
+        width = img.getWidth();
+        height = img.getHeight();
         encodedImg = new BufferedImage(originalImg.getWidth(), originalImg.getHeight(), BufferedImage.TYPE_INT_RGB);
         colorAsIntegerArray = null;
     }
@@ -41,9 +43,9 @@ public class ImageHandler {
         height = originalImg.getHeight();
     }
 
-    public void saveImageToFile(String filePath) {
+    public void saveImageToFile(BufferedImage img, String filePath) {
         try {
-            ImageIO.write(originalImg, "jpg", new File(filePath));
+            ImageIO.write(img, "png", new File(filePath));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -58,7 +60,7 @@ public class ImageHandler {
     public void buildImageFromArray() {
         fileCounter++;
         encodedImg.setRGB(0,0,width, height, colorAsIntegerArray, 0, width);
-        saveImageToFile("img/resultaat" + fileCounter + ".jpg");
+        saveImageToFile(encodedImg,"img/resultaat" + fileCounter + ".png");
     }
 
     public Color[] getColorArray() {
