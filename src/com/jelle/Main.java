@@ -4,12 +4,20 @@ import java.awt.image.BufferedImage;
 
 public class Main {
     public static void main(String... args) {
-        int regionWidth = 8;
-        int regionHeight = 8;
+        int regionWidth = 4;
+        int regionHeight = 4;
         ImageHandler imageHandler = new ImageHandler("img/voorbeeld3.jpg");
         BufferedImage img = imageHandler.getOriginalImg();
         RegionHandler regionHandler = new RegionHandler(img, regionWidth, regionHeight);
-        Encoder enc = new Encoder("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer venenatis efficitur sollicitudin. Nullam eu mollis turpis. Interdum et malesuada fames ac ante ipsum primis in faucibus. Duis imperdiet massa orci, quis euismod neque pulvinar id. Morbi aliquam dolor ut magna lacinia, vitae tempus tellus maximus. Duis dolor massa, rhoncus nec risus vitae, egestas dapibus ligula. Quisque in pulvinar urna. Proin egestas lectus sed consequat vestibulum. Nullam congue maximus mollis. Pellentesque sit amet iaculis sapien. Maecenas semper sem et augue semper gravida. Quisque a eros finibus, fringilla velit sed, euismod dolor. Aliquam sed facilisis tortor, sed mollis tellus. Quisque non imperdiet tortor.\n" +
+
+        StringBuilder sb = new StringBuilder(1000000);
+        for(int i = 0; i < 1000000; i++) {
+            sb.append(' ');
+        }
+
+        Encoder enc = new Encoder(sb.toString());
+
+       /* Encoder enc = new Encoder("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer venenatis efficitur sollicitudin. Nullam eu mollis turpis. Interdum et malesuada fames ac ante ipsum primis in faucibus. Duis imperdiet massa orci, quis euismod neque pulvinar id. Morbi aliquam dolor ut magna lacinia, vitae tempus tellus maximus. Duis dolor massa, rhoncus nec risus vitae, egestas dapibus ligula. Quisque in pulvinar urna. Proin egestas lectus sed consequat vestibulum. Nullam congue maximus mollis. Pellentesque sit amet iaculis sapien. Maecenas semper sem et augue semper gravida. Quisque a eros finibus, fringilla velit sed, euismod dolor. Aliquam sed facilisis tortor, sed mollis tellus. Quisque non imperdiet tortor.\n" +
                 "Curabitur elit diam, vehicula vel sem sed, faucibus consectetur dolor. Cras vitae rhoncus lacus. Sed rhoncus tincidunt lacus, blandit porttitor turpis vulputate ac. Praesent in eros lacinia, faucibus turpis et, ultricies eros. Ut tincidunt finibus tellus. In augue massa, varius ac augue id, imperdiet cursus purus. Donec mi purus, posuere nec lorem sit amet, volutpat varius sapien. Integer finibus est tincidunt, finibus dui sit amet, tincidunt est. Donec lorem nulla, mattis porttitor efficitur a, iaculis vel urna.\n" +
                 "\n" +
                 "Aliquam lectus felis, ultrices sed purus ac, rhoncus vehicula justo. Maecenas nec ex sit amet mauris bibendum maximus in eget massa. Nam metus turpis, consectetur et pharetra eget, aliquet eget orci. In odio nibh, pharetra sed suscipit ac, eleifend lacinia mauris. Integer commodo, eros ac mollis pulvinar, leo turpis volutpat enim, at dignissim nisl nisi eget eros. Suspendisse potenti. Nullam vehicula massa magna, quis bibendum lorem tempor in.\n" +
@@ -216,12 +224,12 @@ public class Main {
                 "\n" +
                 "Donec vel velit pharetra, blandit mi nec, mollis metus. Pellentesque ac ligula lobortis, consectetur orci ut, ornare sem. Maecenas nisi nisi, fermentum in ipsum quis, interdum finibus augue. Morbi eget elementum risus. Quisque ut lobortis enim, ut semper sem. Aenean consectetur elementum justo eu scelerisque. Lorem ipsum dolor sit amet, consectetur adipiscing elit. In suscipit libero ac mollis ultricies. Proin efficitur est ac dolor mattis pretium. Pellentesque congue orci ut ipsum dictum feugiat. Curabitur eget fringilla massa, non posuere diam. Praesent ornare eros dui, id vulputate mi consequat a.\n" +
 
-                "Sed risus tellus, gravida vitae aliquet id, ultrices at dolor. Maecenas laoreet enim justo, quis tincidunt velit bibendum tincidunt. Curabitur rutrum fermentum lorem feugiat semper. In ullamcorper id purus eu tincidunt. Vestibulum tempus erat blandit risus consectetur, non convallis dolor interdum. In sem massa, porttitor aliquam aliquet ut, interdum quis odio. Phasellus malesuada ligula non pharetra facilisis. Phasellus commodo risus ac enim convallis, eget luctus est volutpat. Vestibulum in justo mi. Praesent et ornare sem, in interdum ex. In consectetur pharetra sollicitudin. Phasellus non interdum orci. Phasellus nec viverra massa, non egestas lorem. Aenean quis diam at magna sodales euismod in quis est. Duis tincidunt nisi ut efficitur tempus. Phasellus a velit volutpat, accumsan odio in, hendrerit est.");
-        regionHandler.encodeAllRegions(enc);
+                "Sed risus tellus, gravida vitae aliquet id, ultrices at dolor. Maecenas laoreet enim justo, quis tincidunt velit bibendum tincidunt. Curabitur rutrum fermentum lorem feugiat semper. In ullamcorper id purus eu tincidunt. Vestibulum tempus erat blandit risus consectetur, non convallis dolor interdum. In sem massa, porttitor aliquam aliquet ut, interdum quis odio. Phasellus malesuada ligula non pharetra facilisis. Phasellus commodo risus ac enim convallis, eget luctus est volutpat. Vestibulum in justo mi. Praesent et ornare sem, in interdum ex. In consectetur pharetra sollicitudin. Phasellus non interdum orci. Phasellus nec viverra massa, non egestas lorem. Aenean quis diam at magna sodales euismod in quis est. Duis tincidunt nisi ut efficitur tempus. Phasellus a velit volutpat, accumsan odio in, hendrerit est."); */
+//        regionHandler.encodeAllRegions(enc);
+//        regionHandler.buildImageFromRegionsColor();
+//        regionHandler.encodeSortedRegions(enc, Comparators.ascColorOffset);
+        regionHandler.encodeSortedRegions(enc, Comparators.descColorOffset);
         regionHandler.buildImageFromRegionsColor();
         imageHandler.buildImageFromArray();
-
-        System.out.println(enc.getCount());
-
     }
 }

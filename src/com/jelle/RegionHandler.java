@@ -1,6 +1,8 @@
 package com.jelle;
 
 import java.awt.image.BufferedImage;
+import java.util.Arrays;
+import java.util.Comparator;
 
 public class RegionHandler extends ImageHandler {
     private static int fileCounter;
@@ -14,12 +16,30 @@ public class RegionHandler extends ImageHandler {
         super(img);
         this.regionWidth = regionWidth;
         this.regionHeight = regionHeight;
+
         xRegions = img.getWidth() / regionWidth;
         yRegions = img.getHeight() / regionHeight;
 
         regions = new Region[xRegions][yRegions];
 
         createRegions();
+    }
+
+    public void encodeSortedRegions(Encoder enc, Comparator<Region> comp) {
+        String code = enc.getCode();
+        int regionVolume = regionWidth * regionHeight;
+        int neededRegions = ((code.length() * (enc.getControlPixels() + 1)) / regionVolume) + 1;
+        int charsPerRegion = regionVolume / (enc.getControlPixels() + 1);
+
+        Region[] sortedRegions = sortRegions(comp);
+
+        for(int i = 0; i < neededRegions; i++) {
+            int startIndex = i * charsPerRegion;
+            int endIndex = Math.min(code.length(), startIndex + charsPerRegion);
+            encodeRegion(sortedRegions[i].getCoordinates()[0], sortedRegions[i].getCoordinates()[1], code.substring(startIndex, endIndex), enc);
+        }
+
+
     }
 
     public void encodeAllRegions(Encoder enc) {
@@ -33,12 +53,6 @@ public class RegionHandler extends ImageHandler {
                 int startIndex = (j * charsPerRegion) + (i * charsPerRegion * xRegions);
                 int endIndex = Math.min(code.length(), startIndex + charsPerRegion);
 
-//                if(startIndex > endIndex) {
-//                    break;
-//                }
-                System.out.println("i: " + i );
-                System.out.println("j: " + j );
-                System.out.println(code.substring(startIndex, endIndex).length());
                 encodeRegion(j, i, code.substring(startIndex, endIndex), enc);
             }
         }
@@ -54,25 +68,6 @@ public class RegionHandler extends ImageHandler {
                 regions[i][j] = new Region(originalImg, i * regionWidth, j * regionHeight, regionWidth, regionHeight);
             }
         }
-    }
-
-    public void buildImageFromRegionsInt() {
-        int[] totalArray = new int[xRegions * yRegions * regionWidth * regionHeight];
-
-        for (int yR = 0; yR < yRegions; yR++) {
-            for (int rH = 0; rH < regionHeight; rH++) {
-                for (int xR = 0; xR < xRegions; xR++) {
-                    for (int rW = 0; rW < regionWidth; rW++) {
-                        totalArray[(yRegions * yR) + (rH * regionHeight) + (xR * xRegions) + rW] = regions[xR][yR].getPixelInt(rW, rH);
-                    }
-                }
-            }
-        }
-
-        fileCounter++;
-
-        encodedImg.setRGB(0, 0, width, height, totalArray, 0, width);
-        saveImageToFile(encodedImg, "img/resultaatRegionRebuilder" + fileCounter + ".png");
     }
 
     public void buildImageFromRegionsColor() {
@@ -96,6 +91,19 @@ public class RegionHandler extends ImageHandler {
         saveImageToFile(encodedImg, "img/resultaatRegionRebuilder" + fileCounter + ".png");
     }
 
+    public Region[] sortRegions(Comparator<Region> comp) {
+        Region[] temp = new Region[xRegions * yRegions];
+
+        for(int i = 0; i < xRegions; i++) {
+            for(int j = 0; j < yRegions; j++) {
+                temp[i + (j * xRegions)] = regions[i][j];
+            }
+         }
+
+        Arrays.sort(temp, comp);
+
+        return temp;
+    }
 
     public Region getRegion(int x, int y) {
         return regions[x][y];
